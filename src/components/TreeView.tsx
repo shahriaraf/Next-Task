@@ -9,10 +9,7 @@ const INITIAL_DATA: TreeNode[] = [
   {
     id: "root-1",
     label: "Root Folder",
-    children: [
-      { id: "c-1", label: "Documents", children: [] },
-      { id: "c-2", label: "Images", children: [] },
-    ],
+    children: [],
   },
 ];
 
