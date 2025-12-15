@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { TreeItem } from "./TreeItem";
 import { TreeNode } from "@/types/tree";
-import { addChildNode, deleteNode, generateId } from "@/lib/tree-utils";
+import { addChildNode, deleteNode } from "@/lib/tree-utils";
 
 const INITIAL_DATA: TreeNode[] = [
   {
@@ -13,14 +13,40 @@ const INITIAL_DATA: TreeNode[] = [
   },
 ];
 
+const STORAGE_KEY = "tree-structure-data"; // Key for LocalStorage
+
 export default function TreeView() {
   const [treeData, setTreeData] = useState<TreeNode[]>(INITIAL_DATA);
   
+  // New state to track if we are running on the client
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // Modal State
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newNodeName, setNewNodeName] = useState("");
+
+  // --- 1. Load Data from LocalStorage on mount ---
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      try {
+        setTreeData(JSON.parse(savedData));
+      } catch (error) {
+        console.error("Failed to parse tree data:", error);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // --- 2. Save Data to LocalStorage whenever it changes ---
+  useEffect(() => {
+    // Only save if we have finished loading (prevents overwriting with empty data on start)
+    if (isLoaded) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(treeData));
+    }
+  }, [treeData, isLoaded]);
 
   // Handlers
   const handleAddStart = (parentId: string) => {
@@ -46,6 +72,11 @@ export default function TreeView() {
     setIsDeleteModalOpen(false);
   };
 
+  // Prevent Hydration Mismatch: Don't render until we are on the client
+  if (!isLoaded) {
+    return <div className="p-8 text-center text-gray-500">Loading tree...</div>;
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-2xl font-bold mb-6">Multi-Level Tree View</h1>
@@ -61,12 +92,21 @@ export default function TreeView() {
         ))}
         {treeData.length === 0 && (
             <div className="text-center text-gray-400 py-10">
-                Tree is empty. Refresh to reset.
+                Tree is empty.
+                <button 
+                  onClick={() => {
+                    setTreeData(INITIAL_DATA);
+                    localStorage.removeItem(STORAGE_KEY);
+                  }}
+                  className="ml-2 text-blue-600 underline hover:text-blue-800"
+                >
+                  Reset to Default
+                </button>
             </div>
         )}
       </div>
 
-      {/* --- MODALS (Ideally extract these to separate components) --- */}
+      {/* --- MODALS --- */}
       
       {/* Add Child Modal */}
       {isAddModalOpen && (
@@ -80,6 +120,10 @@ export default function TreeView() {
               value={newNodeName}
               onChange={(e) => setNewNodeName(e.target.value)}
               autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") confirmAdd();
+                if (e.key === "Escape") setIsAddModalOpen(false);
+              }}
             />
             <div className="flex justify-end gap-2">
               <button 
