@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react";
 import { TreeItem } from "./TreeItem";
 import { TreeNode } from "@/types/tree";
 import { addChildNode, deleteNode } from "@/lib/tree-utils";
@@ -72,7 +72,7 @@ export default function TreeView() {
     setIsDeleteModalOpen(false);
   };
 
-  // Prevent Hydration Mismatch: Don't render until we are on the client
+
   if (!isLoaded) {
     return <div className="p-8 text-center text-gray-500">Loading tree...</div>;
   }
@@ -106,7 +106,6 @@ export default function TreeView() {
         )}
       </div>
 
-      {/* --- MODALS --- */}
       
       {/* Add Child Modal */}
       {isAddModalOpen && (
