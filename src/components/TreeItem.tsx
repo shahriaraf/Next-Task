@@ -17,7 +17,7 @@ export const TreeItem: React.FC<TreeItemProps> = ({ node, onAdd, onDelete }) => 
   const hasChildren = node.children.length > 0;
 
   return (
-    <div className="pl-4 border-l border-gray-200">
+    <div className="pl-4 border-l border-gray-300">
       <div className="flex items-center group py-2">
         {/* Expand/Collapse Icon */}
         <button
