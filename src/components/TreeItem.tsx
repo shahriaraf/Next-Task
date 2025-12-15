@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { TreeNode } from "@/types/tree";
-import { ChevronRight, ChevronDown, MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import { ChevronRight, ChevronDown, MoreHorizontal, Plus, Trash2, File, } from "lucide-react";
 
 interface TreeItemProps {
   node: TreeNode;
@@ -30,7 +30,7 @@ export const TreeItem: React.FC<TreeItemProps> = ({ node, onAdd, onDelete }) => 
         </button>
 
         {/* Node Label */}
-        <span className="font-medium text-gray-700">{node.label}</span>
+        <span className="font-medium text-gray-700 flex items-center gap-2"><File className="text-[4px]"></File>{node.label}</span>
 
         {/* 3-Dot Menu */}
         <div className="relative ml-auto">
